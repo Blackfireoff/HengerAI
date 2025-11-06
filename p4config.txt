@@ -1,0 +1,4 @@
+P4PORT=ssl:perforce.uqac.ca:1666
+P4USER=cbuttigieg
+P4CLIENT=chloe_henger_main
+P4IGNORE=.p4ignore.txt
