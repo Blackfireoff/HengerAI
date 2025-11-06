@@ -153,7 +153,6 @@ void AJerryPlayer::ShootInput()
 
 	FVector CameraLocation = FollowCamera->GetComponentLocation();
 	FVector CameraForward = FollowCamera->GetForwardVector();
-	float MaxTraceDistance = 10000.f;
 
 	FVector CameraTraceEnd = CameraLocation + (CameraForward * MaxTraceDistance);
 

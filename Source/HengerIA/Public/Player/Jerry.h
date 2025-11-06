@@ -19,8 +19,7 @@ class HENGERIA_API AJerry : public ACharacter
     class UAIPerceptionStimuliSourceComponent* StimuliSource;
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* SK_Gun;
+	
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ShootMontage;
@@ -34,8 +33,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float CurrentHealth = 100.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Health")
-	float WeaponDamage = 10.f;
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 	UTeamDataAsset* TeamDataAsset;
@@ -51,6 +49,15 @@ public:
 
 	UFUNCTION()
 	void ApplyTeamAsset(ETeamID TeamToAssigned);
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	class USkeletalMeshComponent* SK_Gun;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float MaxTraceDistance = 10000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+	float WeaponDamage = 10.f;
 
 protected:
 	// Called when the game starts or when spawned
