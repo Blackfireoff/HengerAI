@@ -7,6 +7,9 @@
 #include "GameFramework/HUD.h"
 #include "JerryHUD.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHUDReady);
+
+class ULifeBarWidget;
 /**
  * 
  */
@@ -24,9 +27,32 @@ protected:
 	UPROPERTY()
 	UUserWidget* CrossWidget;
 
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<ULifeBarWidget> LifeBarWidgetClass;
+
+	UPROPERTY()
+	ULifeBarWidget* LifeBarWidget;
+
+	UFUNCTION()
+	void OnPawnChanged(APawn* OldPawn, APawn* NewPawn);
+	
+	void BindToPawnDelegates(APawn* Pawn);
+
 	UFUNCTION()
 	void ShowCrossWidget();
 
 	UFUNCTION()
 	void HideCrossWidget();
+
+	UFUNCTION()
+	void ShowLifeBarWidget();
+
+	UFUNCTION()
+	void HideLifeBarWidget();
+
+	UFUNCTION()
+	void UpdateLifeBar(float NewLifePercentage);
+
+public:
+	FOnHUDReady OnHUDReady;
 };

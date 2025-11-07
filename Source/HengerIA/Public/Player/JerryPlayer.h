@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HUD/JerryHUD.h"
 #include "Player/Jerry.h"
 #include "JerryPlayer.generated.h"
 
@@ -14,6 +15,9 @@ struct FInputActionValue;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAimStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAimEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShowLifeBar);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideLifeBar);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLifeUpdated, float, NewLifePercentage);
 
 UCLASS()
 class HENGERIA_API AJerryPlayer : public AJerry
@@ -76,7 +80,9 @@ public:
 	FOnAimStarted OnAimStarted;
 	FOnAimEnded OnAimEnded;
 
-
+	FOnShowLifeBar OnShowLifeBar;
+	FOnHideLifeBar OnHideLifeBar;
+	FOnLifeUpdated OnLifeUpdated;
 
 protected:
 	virtual void BeginPlay() override;
@@ -100,12 +106,13 @@ protected:
 	void BoostInputEnd();
 
 	virtual void ShootInput() override;
-
-
-
+	
 	virtual void Die() override;
 
-
+	void ResetHealth();
+	
+	UFUNCTION()
+	void OnHUDReady();
 
 public:
 	// Called to bind functionality to input
@@ -113,6 +120,8 @@ public:
 
 	UFUNCTION()
 	void SetCollisionDefault();
-	void ResetHealth();
 	
+	virtual void TakeDamage(float DamageAmount) override;
+
+	void BindToHUDEvent(AJerryHUD* JerryHUD);
 };

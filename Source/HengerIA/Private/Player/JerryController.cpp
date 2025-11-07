@@ -4,6 +4,8 @@
 #include "Player/JerryController.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "HUD/JerryHUD.h"
+#include "Player/JerryPlayer.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -17,5 +19,15 @@ void AJerryController::SetupInputComponent()
 		{
 			Subsystem->AddMappingContext(CurrentContext, 0);
 		}
+	}
+}
+
+void AJerryController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	if (AJerryPlayer* JerryPlayer = Cast<AJerryPlayer>(InPawn))
+	{
+		JerryPlayer->BindToHUDEvent(Cast<AJerryHUD>(GetHUD()));
 	}
 }

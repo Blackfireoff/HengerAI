@@ -9,6 +9,8 @@
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HUD/JerryHUD.h"
+#include "Player/JerryController.h"
 #include "Player/AI/JerryAI.h"
 
 void AJerryPlayer::BeginPlay()
@@ -21,9 +23,8 @@ void AJerryPlayer::BeginPlay()
 	ResetHealth();
 	ApplyTeamAsset(Team);
 
-
-
-	//GetCharacterMovement()->DisableMovement();
+	// When Player start game for the first time, HUD is already created
+	OnHUDReady();
 }
 
 void AJerryPlayer::Tick(float DeltaTime)
@@ -212,9 +213,24 @@ void AJerryPlayer::ResetHealth()
 	CurrentHealth = MaxHealth;
 }
 
+void AJerryPlayer::TakeDamage(float DamageAmount)
+{
+	Super::TakeDamage(DamageAmount);
+	OnLifeUpdated.Broadcast(CurrentHealth / MaxHealth);
+}
+
+void AJerryPlayer::OnHUDReady()
+{
+	OnShowLifeBar.Broadcast();
+	OnLifeUpdated.Broadcast(1.0f);
+}
+
 void AJerryPlayer::Die()
 {
 	Super::Die();
+
+	OnLifeUpdated.Broadcast(0.0f);
+	OnHideLifeBar.Broadcast();
 	
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName(FName("Ragdoll"));
@@ -231,7 +247,13 @@ void AJerryPlayer::Die()
 	}
 
 	
-	
-	
+}
+
+void AJerryPlayer::BindToHUDEvent(AJerryHUD* JerryHUD)
+{
+	if (JerryHUD)
+	{
+		JerryHUD->OnHUDReady.AddDynamic(this, &AJerryPlayer::OnHUDReady);
+	}		
 }
 

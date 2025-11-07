@@ -20,4 +20,6 @@ protected:
 	TArray<UInputMappingContext*> DefaultMappingContexts;
 
 	virtual void SetupInputComponent() override;
+
+	virtual void OnPossess(APawn* InPawn) override;
 };
