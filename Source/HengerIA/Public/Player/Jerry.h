@@ -10,6 +10,13 @@
 class UTeamDataAsset;
 enum class ETeamID : uint8;
 
+UENUM(BlueprintType)
+enum class EJerryState : uint8
+{
+	Alive	UMETA(DisplayName = "Alive"),
+	Dead	UMETA(DisplayName = "Dead")
+};
+
 UCLASS()
 class HENGERIA_API AJerry : public ACharacter
 {
@@ -19,8 +26,6 @@ class HENGERIA_API AJerry : public ACharacter
     class UAIPerceptionStimuliSourceComponent* StimuliSource;
 
 protected:
-	
-
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ShootMontage;
 
@@ -33,10 +38,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float CurrentHealth = 100.f;
 
-
-
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 	UTeamDataAsset* TeamDataAsset;
+
+	UPROPERTY()
+	EJerryState JerryState = EJerryState::Alive;
 
 public:
 	// Sets default values for this character's properties
@@ -58,6 +64,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float WeaponDamage = 10.f;
+
+	virtual void ApplyState(EJerryState NewJerryState);
+
+	EJerryState GetJerryState() { return JerryState; }
 
 protected:
 	// Called when the game starts or when spawned

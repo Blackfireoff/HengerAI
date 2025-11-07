@@ -43,6 +43,7 @@ void AJerryAI::Die()
 {
 	Super::Die();
 
+	ApplyState(EJerryState::Dead);
 	HealthWidget->SetVisibility(ESlateVisibility::Hidden);
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -82,6 +83,27 @@ void AJerryAI::TakeDamage(float DamageAmount, AActor* DamageCauser)
 						BB->SetValueAsBool(FName("CanSeeEnemy"), true);
 					}
 				}
+			}
+		}
+	}
+}
+
+void AJerryAI::ApplyState(EJerryState NewJerryState)
+{
+	Super::ApplyState(NewJerryState);
+
+	if (AJerryAIController* AIController = Cast<AJerryAIController>(GetController()))
+	{
+		if (UBlackboardComponent* BB = AIController->BlackboardComponent)
+		{
+			if (NewJerryState == EJerryState::Alive)
+			{
+				BB->SetValueAsBool(FName("IsDead"), false);
+				return;
+			}
+			if (NewJerryState == EJerryState::Dead)
+			{
+				BB->SetValueAsBool(FName("IsDead"), true);
 			}
 		}
 	}

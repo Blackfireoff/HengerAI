@@ -68,7 +68,7 @@ void AJerryAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus co
 
 		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 		{
-			if (Stimulus.WasSuccessfullySensed())
+			if (Stimulus.WasSuccessfullySensed() && Jerry->GetJerryState() == EJerryState::Alive)
 			{
 				
 				BlackboardComponent->SetValueAsBool("CanSeeEnemy", true);

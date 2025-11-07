@@ -232,6 +232,8 @@ void AJerryPlayer::Die()
 
 	OnLifeUpdated.Broadcast(0.0f);
 	OnHideLifeBar.Broadcast();
+
+	ApplyState(EJerryState::Dead);
 	
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName(FName("Ragdoll"));
