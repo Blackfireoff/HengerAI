@@ -17,7 +17,11 @@ AJerryAI::AJerryAI()
 	HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	HealthWidgetComponent->SetDrawSize(FVector2D(150.f, 20.f));
 
-	GetMesh()->SetCollisionProfileName(FName("BlockAll"));
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -46,8 +50,8 @@ void AJerryAI::Die()
 	ApplyState(EJerryState::Dead);
 	HealthWidget->SetVisibility(ESlateVisibility::Hidden);
 	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	GetMesh()->SetCollisionProfileName(FName("Ragdoll"));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().SetTimer(RespawnTimer, this, &AJerryAI::Respawn, DespawnTime, false);
 }
 
