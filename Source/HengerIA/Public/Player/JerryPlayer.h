@@ -76,6 +76,8 @@ public:
 	FOnAimStarted OnAimStarted;
 	FOnAimEnded OnAimEnded;
 
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -99,10 +101,18 @@ protected:
 
 	virtual void ShootInput() override;
 
-	void ResetHealth();
+
+
+	virtual void Die() override;
+
+
 
 public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void SetCollisionDefault();
+	void ResetHealth();
 	
 };

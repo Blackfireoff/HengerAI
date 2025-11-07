@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/AI/JerryAI.h"
 
@@ -19,6 +20,10 @@ void AJerryPlayer::BeginPlay()
 	
 	ResetHealth();
 	ApplyTeamAsset(Team);
+
+
+
+	//GetCharacterMovement()->DisableMovement();
 }
 
 void AJerryPlayer::Tick(float DeltaTime)
@@ -33,6 +38,7 @@ void AJerryPlayer::Tick(float DeltaTime)
 		ZoomInterpSpeed
 	);
 }
+
 
 // Called to bind functionality to input
 void AJerryPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -65,6 +71,13 @@ void AJerryPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void AJerryPlayer::SetCollisionDefault()
+{
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetCollisionProfileName(FName("CharacterMesh"));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+
 AJerryPlayer::AJerryPlayer()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -76,6 +89,9 @@ AJerryPlayer::AJerryPlayer()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	//OnPlayerDied.AddDynamic(this, &AHengerIAGameMode::OnPlayerDied);
+	
 }
 
 void AJerryPlayer::MoveInput(const FInputActionValue& Value)
@@ -194,5 +210,28 @@ void AJerryPlayer::ShootInput()
 void AJerryPlayer::ResetHealth()
 {
 	CurrentHealth = MaxHealth;
+}
+
+void AJerryPlayer::Die()
+{
+	Super::Die();
+	
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName(FName("Ragdoll"));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+
+	if (AController* PlayerController = GetController())
+	{
+		DisableInput(Cast<APlayerController>(PlayerController));
+		if (AHengerIAGameMode* GameMode = GetWorld()->GetAuthGameMode<AHengerIAGameMode>())
+		{
+			GameMode->OnPlayerDied(PlayerController);
+		}
+	}
+
+	
+	
+	
 }
 

@@ -17,13 +17,25 @@ enum class ETeamID : uint8
 	Team_Green	UMETA(DisplayName = "Green Team"),
 };
 
+
 UCLASS(abstract)
 class AHengerIAGameMode : public AGameModeBase
 {
+
 	GENERATED_BODY()
 
 public:
 	AHengerIAGameMode();
+
+	void OnPlayerDied(AController* PlayerController);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Game Flow")
+	float RespawnDelay = 3.0f;
+    
+	UFUNCTION()
+	void DelayedRestartPlayer(AController* Controller, APawn* DeadPawn);
+	
 };
 
 

@@ -75,6 +75,8 @@ void AJerry::TakeDamage(float DamageAmount)
 		Die();
 		return;
 	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Jerry took %f damage, current health: %f"), DamageAmount, CurrentHealth);
 	
 	// Damage animation
 	if (DamageMontage)
