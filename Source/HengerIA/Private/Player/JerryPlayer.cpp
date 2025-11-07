@@ -201,7 +201,7 @@ void AJerryPlayer::ShootInput()
 			{
 				if (JerryAI->Team != Team)
 				{	
-					JerryAI->TakeDamage(WeaponDamage);
+					JerryAI->TakeDamage(WeaponDamage, this);
 				}
 			}
 		}
@@ -213,10 +213,11 @@ void AJerryPlayer::ResetHealth()
 	CurrentHealth = MaxHealth;
 }
 
-void AJerryPlayer::TakeDamage(float DamageAmount)
+void AJerryPlayer::TakeDamage(float DamageAmount, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount);
+	Super::TakeDamage(DamageAmount, DamageCauser);
 	OnLifeUpdated.Broadcast(CurrentHealth / MaxHealth);
+	
 }
 
 void AJerryPlayer::OnHUDReady()

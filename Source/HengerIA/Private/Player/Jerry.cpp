@@ -61,7 +61,7 @@ void AJerry::Die()
 {
 }
 
-void AJerry::TakeDamage(float DamageAmount)
+void AJerry::TakeDamage(float DamageAmount, AActor* DamageCauser)
 {
 	if (CurrentHealth <= 0.f)
 	{

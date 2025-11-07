@@ -121,7 +121,7 @@ public:
 	UFUNCTION()
 	void SetCollisionDefault();
 	
-	virtual void TakeDamage(float DamageAmount) override;
+	virtual void TakeDamage(float DamageAmount, AActor* DamageCauser) override;
 
 	void BindToHUDEvent(AJerryHUD* JerryHUD);
 };

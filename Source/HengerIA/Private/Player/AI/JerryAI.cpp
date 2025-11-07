@@ -56,9 +56,33 @@ void AJerryAI::Respawn()
 	Destroy();
 }
 
-void AJerryAI::TakeDamage(float DamageAmount)
+void AJerryAI::TakeDamage(float DamageAmount, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount);
+	Super::TakeDamage(DamageAmount, DamageCauser);
 
 	HealthWidget->SetLifePercentage(CurrentHealth / MaxHealth);
+
+	// Si l'IA est déjà morte, ne faites rien
+	if (CurrentHealth <= 0.f)
+	{
+		return;
+	}
+	
+	if (DamageCauser)
+	{
+		if (AJerry* Attacker = Cast<AJerry>(DamageCauser))
+		{
+			if (Attacker->Team != this->Team)
+			{
+				if (AJerryAIController* AIController = Cast<AJerryAIController>(GetController()))
+				{
+					if (UBlackboardComponent* BB = AIController->BlackboardComponent)
+					{
+						BB->SetValueAsObject(FName("TargetActor"), Attacker);
+						BB->SetValueAsBool(FName("CanSeeEnemy"), true);
+					}
+				}
+			}
+		}
+	}
 }

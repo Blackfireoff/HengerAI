@@ -45,5 +45,5 @@ public:
 
 	FOnAIDied OnAIDied;
 
-	virtual void TakeDamage(float DamageAmount) override;
+	virtual void TakeDamage(float DamageAmount, AActor* DamageCauser) override;
 };

@@ -45,8 +45,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	ETeamID Team = ETeamID::Team_Purple;
 
-	virtual void TakeDamage(float DamageAmount);
-
+	virtual void TakeDamage(float DamageAmount, AActor* DamageCauser);
+	
 	UFUNCTION()
 	void ApplyTeamAsset(ETeamID TeamToAssigned);
 

@@ -42,7 +42,7 @@ EBTNodeResult::Type UTask_ShootEnemy::ExecuteTask(UBehaviorTreeComponent& OwnerC
 					{
 						if (Jerry->Team != JerryAI->Team)
 						{	
-							Jerry->TakeDamage(JerryAI->WeaponDamage);
+							Jerry->TakeDamage(JerryAI->WeaponDamage, JerryAI);
 							return EBTNodeResult::Succeeded;
 						}
 					}
