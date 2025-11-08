@@ -79,19 +79,17 @@ void AJerry::TakeDamage(float DamageAmount, AActor* DamageCauser)
 	}
 
 	CurrentHealth -= DamageAmount;
-
+	if (AJerry* AttackerJerry = Cast<AJerry>(DamageCauser))
+	{
+		if (AJerryAIController* AIController = Cast<AJerryAIController>(AttackerJerry->GetController()))
+		{
+			AIController->BindToCleanFocusedEnemyEvent(this);
+		}
+	}
+	
 	if (CurrentHealth <= 0.f)
 	{
-		if (AJerryAI* JerryAI = Cast<AJerryAI>(DamageCauser))
-		{
-			if (AJerryAIController* AIController = Cast<AJerryAIController>(JerryAI->GetController()))
-			{
-				if (UBlackboardComponent* BB = AIController->BlackboardComponent)
-				{
-					BB->SetValueAsBool(FName("CanSeeEnemy"), false);
-				}
-			}
-		}
+		OnClearEnemiesWithFocusOnMe.Broadcast(this);
 		Die();
 		return;
 	}

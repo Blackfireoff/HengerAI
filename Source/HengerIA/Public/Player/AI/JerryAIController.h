@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "JerryAIController.generated.h"
 
+class AJerry;
 /**
  * 
  */
@@ -36,4 +37,11 @@ public:
 	AJerryAIController();
 	
 	virtual void OnPossess(APawn* InPawn) override;
+
+	void SetEnemyToFocus(AActor* EnemyActor);
+
+	UFUNCTION()
+	void RemoveEnemyFocus(AJerry* FocusedActor);
+
+	void BindToCleanFocusedEnemyEvent(AJerry* FocusedActor);
 };

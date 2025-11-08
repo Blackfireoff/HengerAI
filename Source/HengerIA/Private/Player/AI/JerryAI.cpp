@@ -24,7 +24,6 @@ AJerryAI::AJerryAI()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 }
 
 void AJerryAI::BeginPlay()

@@ -17,6 +17,8 @@ enum class EJerryState : uint8
 	Dead	UMETA(DisplayName = "Dead")
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClearEnemiesWithFocusOnMe, AJerry*, FocusedActor);
+
 UCLASS()
 class HENGERIA_API AJerry : public ACharacter
 {
@@ -44,6 +46,9 @@ protected:
 	UPROPERTY()
 	EJerryState JerryState = EJerryState::Alive;
 
+	UPROPERTY()
+	TSet<AJerry*> EnemiesWithFocusOnMe;
+
 public:
 	// Sets default values for this character's properties
 	AJerry();
@@ -68,6 +73,8 @@ public:
 	virtual void ApplyState(EJerryState NewJerryState);
 
 	EJerryState GetJerryState() { return JerryState; }
+
+	FOnClearEnemiesWithFocusOnMe OnClearEnemiesWithFocusOnMe;
 
 protected:
 	// Called when the game starts or when spawned
