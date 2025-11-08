@@ -10,6 +10,15 @@
 class UTeamDataAsset;
 enum class ETeamID : uint8;
 
+UENUM(BlueprintType)
+enum class EJerryState : uint8
+{
+	Alive	UMETA(DisplayName = "Alive"),
+	Dead	UMETA(DisplayName = "Dead")
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClearEnemiesWithFocusOnMe, AJerry*, FocusedActor);
+
 UCLASS()
 class HENGERIA_API AJerry : public ACharacter
 {
@@ -19,8 +28,6 @@ class HENGERIA_API AJerry : public ACharacter
     class UAIPerceptionStimuliSourceComponent* StimuliSource;
 
 protected:
-	
-
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* ShootMontage;
 
@@ -33,10 +40,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float CurrentHealth = 100.f;
 
-
-
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 	UTeamDataAsset* TeamDataAsset;
+
+	UPROPERTY()
+	EJerryState JerryState = EJerryState::Alive;
+
+	UPROPERTY()
+	TSet<AJerry*> EnemiesWithFocusOnMe;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
 	AController* LastDamageInstigator;
@@ -61,6 +72,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Health")
 	float WeaponDamage = 10.f;
+
+	virtual void ApplyState(EJerryState NewJerryState);
+
+	EJerryState GetJerryState() { return JerryState; }
+
+	FOnClearEnemiesWithFocusOnMe OnClearEnemiesWithFocusOnMe;
 
 protected:
 	// Called when the game starts or when spawned

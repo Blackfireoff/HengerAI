@@ -46,4 +46,6 @@ public:
 	FOnAIDied OnAIDied;
 
 	virtual void TakeDamage(float DamageAmount, AActor* DamageCauser) override;
+
+	virtual void ApplyState(EJerryState NewJerryState) override;
 };

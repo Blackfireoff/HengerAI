@@ -6,8 +6,11 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "Player/AI/JerryAI.h"
+#include "Player/AI/JerryAIController.h"
 #include "Player/DA/TeamDataAsset.h"
 #include "HengerIAGameMode.h"
 #include "Player/JerryPlayerState.h"
@@ -39,6 +42,11 @@ AJerry::AJerry()
 	StimuliSource->RegisterForSense(UAISense_Sight::StaticClass());
 }
 
+void AJerry::ApplyState(EJerryState NewJerryState)
+{
+	JerryState = NewJerryState;
+}
+
 // Called when the game starts or when spawned
 void AJerry::BeginPlay()
 {
@@ -46,6 +54,8 @@ void AJerry::BeginPlay()
 
 	const FAttachmentTransformRules AttachmentRule(EAttachmentRule::SnapToTarget, false);
 	SK_Gun->AttachToComponent(GetMesh(), AttachmentRule, TEXT("HandGrip_R"));
+
+	ApplyState(EJerryState::Alive);
 }
 
 void AJerry::ShootInput()
@@ -91,9 +101,17 @@ void AJerry::TakeDamage(float DamageAmount, AActor* DamageCauser)
 	}
 
 	CurrentHealth -= DamageAmount;
-
+	if (AJerry* AttackerJerry = Cast<AJerry>(DamageCauser))
+	{
+		if (AJerryAIController* AIController = Cast<AJerryAIController>(AttackerJerry->GetController()))
+		{
+			AIController->BindToCleanFocusedEnemyEvent(this);
+		}
+	}
+	
 	if (CurrentHealth <= 0.f)
 	{
+		OnClearEnemiesWithFocusOnMe.Broadcast(this);
 		Die();
 		return;
 	}

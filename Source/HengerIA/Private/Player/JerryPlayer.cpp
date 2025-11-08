@@ -10,8 +10,31 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HUD/JerryHUD.h"
-#include "Player/JerryController.h"
 #include "Player/AI/JerryAI.h"
+
+AJerryPlayer::AJerryPlayer()
+{
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = DefaultArmLength;
+	CameraBoom->bUsePawnControlRotation = true;
+
+	// Create a follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
+
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Block);
+	GetMesh()->SetCollisionObjectType(ECC_Pawn);
+	GetMesh()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Block);
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_Pawn);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	
+}
 
 void AJerryPlayer::BeginPlay()
 {
@@ -77,22 +100,6 @@ void AJerryPlayer::SetCollisionDefault()
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetCollisionProfileName(FName("CharacterMesh"));
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-}
-
-AJerryPlayer::AJerryPlayer()
-{
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = DefaultArmLength;
-	CameraBoom->bUsePawnControlRotation = true;
-
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	FollowCamera->bUsePawnControlRotation = false;
-
-	//OnPlayerDied.AddDynamic(this, &AHengerIAGameMode::OnPlayerDied);
-	
 }
 
 void AJerryPlayer::MoveInput(const FInputActionValue& Value)
@@ -232,6 +239,8 @@ void AJerryPlayer::Die()
 
 	OnLifeUpdated.Broadcast(0.0f);
 	OnHideLifeBar.Broadcast();
+
+	ApplyState(EJerryState::Dead);
 	
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName(FName("Ragdoll"));

@@ -46,6 +46,41 @@ void AJerryAIController::OnPossess(APawn* InPawn)
 	}
 }
 
+void AJerryAIController::SetEnemyToFocus(AActor* EnemyActor)
+{
+	if (!EnemyActor) return;
+	
+	if (AJerryAI* SelfJerryAI = Cast<AJerryAI>(GetPawn()))
+	{
+		BlackboardComponent->SetValueAsBool("CanSeeEnemy", true);
+		BlackboardComponent->SetValueAsObject("TargetActor", EnemyActor);
+		SetFocus(EnemyActor);
+		SelfJerryAI->bUseControllerRotationYaw = true;
+	}
+}
+
+void AJerryAIController::RemoveEnemyFocus(AJerry* FocusedActor)
+{
+	if (AJerry* TargetJerry = Cast<AJerry>(BlackboardComponent->GetValueAsObject(FName("TargetActor"))))
+	{
+		if (!FocusedActor || FocusedActor == TargetJerry)
+		{
+			if (AJerryAI* SelfJerryAI = Cast<AJerryAI>(GetPawn()))
+			{
+				BlackboardComponent->SetValueAsBool("CanSeeEnemy", false);
+				BlackboardComponent->SetValueAsObject("TargetActor", nullptr);
+				ClearFocus(EAIFocusPriority::Default);
+				SelfJerryAI->bUseControllerRotationYaw = false;
+			}
+		}
+	}
+}
+
+void AJerryAIController::BindToCleanFocusedEnemyEvent(AJerry* FocusedActor)
+{
+	FocusedActor->OnClearEnemiesWithFocusOnMe.AddUniqueDynamic(this, &AJerryAIController::RemoveEnemyFocus);
+}
+
 void AJerryAIController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -64,20 +99,20 @@ void AJerryAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus co
 		if (AJerryAI* SelfJerryAI = Cast<AJerryAI>(GetPawn()))
 		{
 			if (SelfJerryAI->Team == JerryTeam) return;
-		}
 
-		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
-		{
-			if (Stimulus.WasSuccessfullySensed())
+			if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 			{
-				
-				BlackboardComponent->SetValueAsBool("CanSeeEnemy", true);
-				BlackboardComponent->SetValueAsObject("TargetActor", Actor);
-			}
-			else
-			{
-				BlackboardComponent->SetValueAsBool("CanSeeEnemy", false);
-				BlackboardComponent->SetValueAsObject("TargetActor", nullptr);
+				if (Stimulus.WasSuccessfullySensed() && Jerry->GetJerryState() == EJerryState::Alive)
+				{
+					SetEnemyToFocus(Jerry);
+				}
+				else
+				{
+					BlackboardComponent->SetValueAsBool("CanSeeEnemy", false);
+					BlackboardComponent->SetValueAsObject("TargetActor", nullptr);
+					ClearFocus(EAIFocusPriority::Default);
+					SelfJerryAI->bUseControllerRotationYaw = false;
+				}
 			}
 		}
 	}
