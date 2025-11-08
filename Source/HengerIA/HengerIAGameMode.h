@@ -29,6 +29,8 @@ public:
 
 	void OnPlayerDied(AController* PlayerController);
 
+	void ReportKill(AController* KillerController, AController* VictimController);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Game Flow")
 	float RespawnDelay = 3.0f;

@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 	UTeamDataAsset* TeamDataAsset;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Health")
+	AController* LastDamageInstigator;
+
 public:
 	// Sets default values for this character's properties
 	AJerry();

@@ -9,6 +9,9 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Player/DA/TeamDataAsset.h"
+#include "HengerIAGameMode.h"
+#include "Player/JerryPlayerState.h"
+#include "GameFramework/Controller.h"
 
 // Sets default values
 AJerry::AJerry()
@@ -59,13 +62,32 @@ void AJerry::ShootInput()
 
 void AJerry::Die()
 {
+	if (AHengerIAGameMode* GameMode = GetWorld()->GetAuthGameMode<AHengerIAGameMode>())
+	{
+		// Notifier le GameMode de la mort
+		// Nous passons le contrôleur du tueur (LastDamageInstigator) et de la victime (this->GetController())
+		GameMode->ReportKill(LastDamageInstigator, GetController());
+	}
 }
 
 void AJerry::TakeDamage(float DamageAmount, AActor* DamageCauser)
 {
 	if (CurrentHealth <= 0.f)
 	{
+		Die();
 		return;
+	}
+
+	if (DamageCauser)
+	{
+		if (APawn* CauserPawn = Cast<APawn>(DamageCauser))
+		{
+			LastDamageInstigator = CauserPawn->GetController();
+		}
+		else if (AController* CauserController = Cast<AController>(DamageCauser))
+		{
+			LastDamageInstigator = CauserController;
+		}
 	}
 
 	CurrentHealth -= DamageAmount;
@@ -85,13 +107,19 @@ void AJerry::TakeDamage(float DamageAmount, AActor* DamageCauser)
 		{
 			AnimInstance->Montage_Play(DamageMontage);
 		}
-	}
+	}	
 	
 }
 
 void AJerry::ApplyTeamAsset(ETeamID TeamToAssigned)
 {
 	Team = TeamToAssigned;
+	
+	if (AJerryPlayerState* JerryPS = GetPlayerState<AJerryPlayerState>())
+	{
+		JerryPS->SetTeam(TeamToAssigned);
+	}
+
 	if (TeamDataAsset)
 	{
 		if (FTeamData* TeamData = TeamDataAsset->TeamAssets.Find(Team))
