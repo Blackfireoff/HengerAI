@@ -46,9 +46,6 @@ protected:
 	UPROPERTY()
 	EJerryState JerryState = EJerryState::Alive;
 
-	UPROPERTY()
-	TSet<AJerry*> EnemiesWithFocusOnMe;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
 	AController* LastDamageInstigator;
 
